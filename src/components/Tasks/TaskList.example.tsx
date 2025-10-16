@@ -52,19 +52,25 @@ export const TaskListExample = () => {
 
       {/* Add Task Input */}
       <div className="flex gap-2 mb-4">
+        <label htmlFor="new-task-input" className="sr-only">
+          New task name
+        </label>
         <input
+          id="new-task-input"
+          name="newTask"
           type="text"
           value={newTaskName}
           onChange={(e) => setNewTaskName(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Add a new task..."
           className="flex-1 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
+          aria-label="Enter new task name"
         />
         <button
           onClick={handleAddTask}
           className="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/30 transition-colors"
           type="button"
-          title="Add task"
+          aria-label="Add task"
         >
           <Plus className="w-5 h-5 text-white" />
         </button>
