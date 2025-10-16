@@ -2,8 +2,10 @@
  * Timer Display Component
  *
  * Circular SVG timer with animated progress ring and time display.
+ * Uses Motion for smooth animations.
  */
 
+import { motion } from "motion/react";
 import { formatTime } from "../../utils/formatTime";
 
 interface TimerDisplayProps {
@@ -19,6 +21,8 @@ export const TimerDisplay = ({
   isRunning,
   sessionNumber,
 }: TimerDisplayProps) => {
+  const circumference = 2 * Math.PI * 90;
+
   return (
     <div className="relative mb-8">
       <svg className="w-full h-64" viewBox="0 0 200 200">
@@ -40,31 +44,61 @@ export const TimerDisplay = ({
           stroke="rgba(255,255,255,0.15)"
           strokeWidth="12"
         />
-        {/* Progress circle */}
-        <circle
+        {/* Progress circle - animated with Motion */}
+        <motion.circle
           cx="100"
           cy="100"
           r="90"
           fill="none"
           stroke="white"
           strokeWidth="12"
-          strokeDasharray={`${2 * Math.PI * 90}`}
-          strokeDashoffset={`${2 * Math.PI * 90 * (1 - progress / 100)}`}
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference * (1 - progress / 100)}
           transform="rotate(-90 100 100)"
-          className="transition-all duration-1000"
           filter="url(#glow)"
           strokeLinecap="round"
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: circumference * (1 - progress / 100) }}
+          transition={{
+            duration: 1,
+            ease: "easeInOut",
+          }}
         />
       </svg>
       {/* Time display overlay */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
-          <div
-            className={`text-7xl font-bold text-white mb-2 ${isRunning ? "animate-pulse" : ""}`}
+          <motion.div
+            className="text-7xl font-bold text-white mb-2"
+            animate={
+              isRunning
+                ? {
+                    opacity: [1, 0.7, 1],
+                  }
+                : {
+                    opacity: 1,
+                  }
+            }
+            transition={
+              isRunning
+                ? {
+                    duration: 2,
+                    repeat: Number.POSITIVE_INFINITY,
+                    ease: "easeInOut",
+                  }
+                : {}
+            }
           >
             {formatTime(timeLeft)}
-          </div>
-          <div className="text-white/60 text-sm">Session {sessionNumber}</div>
+          </motion.div>
+          <motion.div
+            className="text-white/60 text-sm"
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            Session {sessionNumber}
+          </motion.div>
         </div>
       </div>
     </div>

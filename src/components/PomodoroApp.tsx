@@ -3,10 +3,11 @@
  *
  * This is the main orchestrator component that brings together all
  * the smaller components, hooks, and utilities to create the complete
- * Pomodoro timer application.
+ * Pomodoro timer application with Motion animations.
  */
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import type { Mode } from "../types/pomodoro.types";
 
 // Hooks
@@ -97,8 +98,12 @@ export const PomodoroApp = () => {
   );
 
   return (
-    <div
-      className={`min-h-screen bg-gradient-to-br ${getPhaseColor(timer.phase)} transition-all duration-1000 relative overflow-hidden`}
+    <motion.div
+      className={`min-h-screen bg-gradient-to-br ${getPhaseColor(timer.phase)} relative overflow-hidden`}
+      key={timer.phase}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1, ease: "easeInOut" }}
     >
       {/* Background Elements */}
       <BackgroundElements />
@@ -107,45 +112,58 @@ export const PomodoroApp = () => {
       <CelebrationModal isVisible={showCelebration} />
 
       {/* Sidebar */}
-      {!focusMode && (
-        <Sidebar
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-          currentMode={timer.mode}
-          onModeChange={handleModeSwitch}
-          stats={timer.stats}
-          onSettingsClick={() => setSettingsOpen(true)}
-        />
-      )}
-
-      {/* Main Content */}
-      <div
-        className={`transition-all duration-300 ${sidebarOpen && !focusMode ? "ml-72" : "ml-0"}`}
-      >
-        {/* Top Bar */}
+      <AnimatePresence>
         {!focusMode && (
-          <TopBar
-            isSidebarOpen={sidebarOpen}
-            onSidebarToggle={() => setSidebarOpen(true)}
-            onFocusModeToggle={() => setFocusMode(true)}
+          <Sidebar
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+            currentMode={timer.mode}
+            onModeChange={handleModeSwitch}
+            stats={timer.stats}
+            onSettingsClick={() => setSettingsOpen(true)}
           />
         )}
+      </AnimatePresence>
+
+      {/* Main Content */}
+      <motion.div
+        animate={{
+          marginLeft: sidebarOpen && !focusMode ? 288 : 0,
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
+        {/* Top Bar */}
+        <AnimatePresence>
+          {!focusMode && (
+            <TopBar
+              isSidebarOpen={sidebarOpen}
+              onSidebarToggle={() => setSidebarOpen(true)}
+              onFocusModeToggle={() => setFocusMode(true)}
+            />
+          )}
+        </AnimatePresence>
 
         {/* Timer Section */}
         <div className="flex items-center justify-center min-h-screen p-6">
-          <div
-            className={`max-w-2xl w-full transition-all duration-500 ${focusMode ? "scale-110" : ""}`}
+          <motion.div
+            className="max-w-2xl w-full"
+            animate={{
+              scale: focusMode ? 1.1 : 1,
+            }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
           >
             {/* Phase Indicator */}
             <PhaseIndicator phase={timer.phase} />
 
             {/* Task Input */}
-            {!timer.isRunning && timer.phase === "work" && !focusMode && (
-              <TaskInput
-                value={timer.taskInput}
-                onChange={timer.setTaskInput}
-              />
-            )}
+            <AnimatePresence>
+              {!timer.isRunning && timer.phase === "work" && !focusMode && (
+                <TaskInput
+                  value={timer.taskInput}
+                  onChange={timer.setTaskInput}
+                />
+              )}
+            </AnimatePresence>
 
             {/* Current Task Display */}
             <CurrentTaskDisplay taskName={timer.currentTask} />
@@ -168,7 +186,9 @@ export const PomodoroApp = () => {
               />
 
               {/* Next Phase Preview */}
-              {!focusMode && <NextPhasePreview nextPhase={nextPhase} />}
+              <AnimatePresence>
+                {!focusMode && <NextPhasePreview nextPhase={nextPhase} />}
+              </AnimatePresence>
 
               {/* Session Progress */}
               <SessionProgress
@@ -176,20 +196,28 @@ export const PomodoroApp = () => {
                 sessionsBeforeLong={timer.modeConfig.sessionsBeforeLong}
               />
             </TimerCard>
-          </div>
+          </motion.div>
         </div>
 
         {/* Focus Mode Exit Button */}
-        {focusMode && (
-          <button
-            onClick={() => setFocusMode(false)}
-            className="fixed bottom-8 right-8 px-6 py-3 rounded-full bg-white/10 backdrop-blur-xl text-white hover:bg-white/20 transition-all border border-white/20 text-sm font-medium"
-            type="button"
-          >
-            Exit Focus Mode
-          </button>
-        )}
-      </div>
+        <AnimatePresence>
+          {focusMode && (
+            <motion.button
+              onClick={() => setFocusMode(false)}
+              className="fixed bottom-8 right-8 px-6 py-3 rounded-full bg-white/10 backdrop-blur-xl text-white border border-white/20 text-sm font-medium hover:bg-white/20"
+              type="button"
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 20 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            >
+              Exit Focus Mode
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
       {/* Settings Panel */}
       <SettingsPanel
@@ -203,11 +231,11 @@ export const PomodoroApp = () => {
         currentMode={timer.mode}
         currentPhase={timer.phase}
         isRunning={timer.isRunning}
-        onTimeLeftUpdate={(value) => {
+        onTimeLeftUpdate={() => {
           // This is handled within SettingsPanel
         }}
       />
-    </div>
+    </motion.div>
   );
 };
 

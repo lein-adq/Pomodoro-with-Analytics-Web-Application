@@ -1,9 +1,10 @@
 /**
  * Timer Controls Component
  *
- * Play/Pause and Reset buttons for the timer.
+ * Play/Pause and Reset buttons for the timer with Motion animations.
  */
 
+import { motion } from "motion/react";
 import { Play, Pause, RotateCcw } from "lucide-react";
 
 interface TimerControlsProps {
@@ -19,10 +20,13 @@ export const TimerControls = ({
 }: TimerControlsProps) => {
   return (
     <div className="flex gap-4 justify-center mb-6">
-      <button
+      <motion.button
         onClick={onToggle}
-        className="bg-white text-gray-900 px-8 py-4 rounded-2xl font-semibold hover:scale-105 active:scale-95 transition-all flex items-center gap-2 shadow-xl hover:shadow-2xl"
+        className="bg-white text-gray-900 px-8 py-4 rounded-2xl font-semibold flex items-center gap-2 shadow-xl"
         type="button"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: "spring", stiffness: 400, damping: 17 }}
       >
         {isRunning ? (
           <>
@@ -35,15 +39,18 @@ export const TimerControls = ({
             Start
           </>
         )}
-      </button>
-      <button
+      </motion.button>
+      <motion.button
         onClick={onReset}
-        className="bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-2xl font-semibold hover:bg-white/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 border border-white/20"
+        className="bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-2xl font-semibold flex items-center gap-2 border border-white/20 hover:bg-white/30"
         type="button"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: "spring", stiffness: 400, damping: 17 }}
       >
         <RotateCcw className="w-5 h-5" />
         Reset
-      </button>
+      </motion.button>
     </div>
   );
 };
