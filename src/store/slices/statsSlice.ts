@@ -1,9 +1,3 @@
-/**
- * Stats Slice
- *
- * Manages session history and analytics with daily/weekly aggregations
- */
-
 import type { StateCreator } from "zustand";
 import type { Mode, Phase } from "../../types/pomodoro.types";
 import type { DailyStats, SessionHistoryItem, StatsState } from "../types";
