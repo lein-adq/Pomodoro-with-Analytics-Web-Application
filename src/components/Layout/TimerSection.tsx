@@ -71,6 +71,7 @@ export const TimerSection = ({
             progress={onGetProgress()}
             isRunning={isRunning}
             sessionNumber={completedSessions + 1}
+            phase={phase}
           />
 
           {/* Controls */}
