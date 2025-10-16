@@ -16,6 +16,15 @@ export {
   useUI,
   useUIActions,
 } from "../store/hooks";
+
 // Local hooks
 export { useAudio } from "./useAudio";
 export { useTimerWorker } from "./useTimerWorker";
+
+// Specialized hooks for app logic
+export { useDocumentTitle } from "./useDocumentTitle";
+export { usePageRefreshWarning } from "./usePageRefreshWarning";
+export { useModeConfigs } from "./useModeConfigs";
+export { usePhaseCompletion } from "./usePhaseCompletion";
+export { useTimerController } from "./useTimerController";
+export { useModeSwitch } from "./useModeSwitch";
