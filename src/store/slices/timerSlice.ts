@@ -6,7 +6,8 @@ export interface TimerActions {
   // Core timer actions
   toggleTimer: () => void;
   tick: () => void;
-  resetTimer: () => void;
+  setTimeLeft: (timeLeft: number) => void;
+  resetTimer: (modeConfigs: ModeConfigs) => void;
 
   // Mode management
   switchMode: (newMode: Mode, modeConfigs: ModeConfigs) => void;
@@ -76,12 +77,23 @@ export const createTimerSlice: StateCreator<TimerSlice, [], [], TimerSlice> = (
   },
 
   /**
+   * Sets the time left directly (used by worker)
+   */
+  setTimeLeft: (timeLeft: number) => {
+    set({ timeLeft });
+  },
+
+  /**
    * Resets timer to initial work phase
    */
-  resetTimer: () => {
+  resetTimer: (modeConfigs: ModeConfigs) => {
+    const state = get();
+    const config = modeConfigs[state.mode];
+
     set({
       isRunning: false,
       phase: "work",
+      timeLeft: config.work,
       completedSessions: 0,
       currentTask: "",
       taskInput: "",

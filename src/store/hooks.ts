@@ -33,6 +33,7 @@ export const useTimerActions = () =>
     useShallow((state) => ({
       toggleTimer: state.toggleTimer,
       tick: state.tick,
+      setTimeLeft: state.setTimeLeft,
       resetTimer: state.resetTimer,
       switchMode: state.switchMode,
       saveCurrentSession: state.saveCurrentSession,
@@ -166,6 +167,7 @@ export const useTimer = (): TimerSlice => {
       savedSessions: state.savedSessions,
       toggleTimer: state.toggleTimer,
       tick: state.tick,
+      setTimeLeft: state.setTimeLeft,
       resetTimer: state.resetTimer,
       switchMode: state.switchMode,
       saveCurrentSession: state.saveCurrentSession,

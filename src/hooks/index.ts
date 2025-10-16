@@ -18,3 +18,4 @@ export {
 } from "../store/hooks";
 // Local hooks
 export { useAudio } from "./useAudio";
+export { useTimerWorker } from "./useTimerWorker";

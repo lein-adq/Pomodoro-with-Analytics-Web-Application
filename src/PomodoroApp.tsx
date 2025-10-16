@@ -22,6 +22,7 @@ import {
   useStatsActions,
   useTimerActions,
   useTimerState,
+  useTimerWorker,
   useUI,
   useUIActions,
 } from "./hooks";
@@ -42,9 +43,6 @@ export const PomodoroApp = () => {
   // Audio Hook
   const { playNotification } = useAudio();
 
-  // Ref for interval
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
@@ -53,6 +51,9 @@ export const PomodoroApp = () => {
     isOpen: false,
     mode: null,
   });
+
+  // Previous isRunning state to detect changes
+  const prevIsRunningRef = useRef(timer.isRunning);
 
   /**
    * Get mode configurations
@@ -69,6 +70,18 @@ export const PomodoroApp = () => {
   });
 
   const modeConfigs = getModeConfigs();
+
+  /**
+   * Timer worker for accurate timing
+   */
+  const worker = useTimerWorker({
+    onTick: (timeLeft) => {
+      timerActions.setTimeLeft(timeLeft);
+    },
+    onComplete: () => {
+      handlePhaseComplete();
+    },
+  });
 
   /**
    * Page refresh warning effect
@@ -88,24 +101,61 @@ export const PomodoroApp = () => {
   }, [timer.isRunning]);
 
   /**
-   * Timer tick effect
+   * Control worker based on timer state changes
    */
   useEffect(() => {
-    if (timer.isRunning && timer.timeLeft > 0) {
-      intervalRef.current = setInterval(() => {
-        timerActions.tick();
-      }, 1000);
-    } else if (timer.timeLeft === 0) {
-      handlePhaseComplete();
+    const wasRunning = prevIsRunningRef.current;
+    const isNowRunning = timer.isRunning;
+
+    // Only start/pause when the running state actually changes
+    if (isNowRunning && !wasRunning) {
+      // Just started - start worker with current time
+      worker.start(timer.timeLeft);
+    } else if (!isNowRunning && wasRunning) {
+      // Just paused/stopped - pause worker
+      worker.pause();
     }
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
+    // Update ref for next render
+    prevIsRunningRef.current = isNowRunning;
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timer.isRunning, timer.timeLeft]);
+  }, [timer.isRunning]);
+
+  /**
+   * Stop worker when timer is reset (completedSessions becomes 0 while not running)
+   */
+  useEffect(() => {
+    if (
+      !timer.isRunning &&
+      timer.completedSessions === 0 &&
+      timer.phase === "work"
+    ) {
+      worker.stop();
+    }
+  }, [timer.completedSessions, timer.phase, timer.isRunning]);
+
+  /**
+   * Update document title with timer
+   */
+  useEffect(() => {
+    if (timer.isRunning) {
+      const minutes = Math.floor(timer.timeLeft / 60);
+      const seconds = timer.timeLeft % 60;
+      const timeStr = `${minutes.toString().padStart(2, "0")}:${seconds
+        .toString()
+        .padStart(2, "0")}`;
+      document.title = `${timeStr} - ${
+        timer.phase === "work"
+          ? "Focus"
+          : timer.phase === "longBreak"
+            ? "Long Break"
+            : "Break"
+      }`;
+    } else {
+      document.title = "Focus Time - Pomodoro Timer";
+    }
+  }, [timer.timeLeft, timer.isRunning, timer.phase]);
 
   /**
    * Handles phase completion - plays sound, shows celebration, adds to stats
@@ -196,7 +246,9 @@ export const PomodoroApp = () => {
 
   return (
     <motion.div
-      className={`min-h-screen bg-gradient-to-br ${getPhaseColor(timer.phase)} relative overflow-hidden`}
+      className={`min-h-screen bg-gradient-to-br ${getPhaseColor(
+        timer.phase,
+      )} relative overflow-hidden`}
       key={timer.phase}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -268,7 +320,7 @@ export const PomodoroApp = () => {
           focusMode={ui.focusMode}
           onTaskInputChange={timerActions.setTaskInput}
           onToggleTimer={timerActions.toggleTimer}
-          onResetTimer={timerActions.resetTimer}
+          onResetTimer={() => timerActions.resetTimer(modeConfigs)}
           onGetProgress={() => timerActions.getProgress(modeConfigs)}
         />
 
