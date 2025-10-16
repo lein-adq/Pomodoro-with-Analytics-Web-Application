@@ -2,6 +2,20 @@
  * Hooks Barrel Export
  */
 
-export { useTimer } from "./useTimer";
-export { usePomodoroSettings } from "./usePomodoroSettings";
+// Store hooks (re-exported for convenience)
+export {
+  useSettings,
+  useSettingsActions,
+  useStats,
+  useStatsActions,
+  useTasks,
+  useTasksActions,
+  useTimer,
+  useTimerActions,
+  useTimerState,
+  useUI,
+  useUIActions,
+} from "../store/hooks";
+// Local hooks
 export { useAudio } from "./useAudio";
+export { useTimerWorker } from "./useTimerWorker";

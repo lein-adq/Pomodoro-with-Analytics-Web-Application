@@ -1,5 +1,5 @@
-import { motion } from "motion/react";
 import { Target, Zap } from "lucide-react";
+import { motion } from "motion/react";
 import type { Stats } from "../../types/pomodoro.types";
 
 interface StatsDisplayProps {

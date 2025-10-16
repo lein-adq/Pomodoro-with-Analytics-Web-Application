@@ -1,5 +1,5 @@
+import { Flame, Settings, Tv } from "lucide-react";
 import { motion } from "motion/react";
-import { Flame, Tv, Settings } from "lucide-react";
 import type { Mode } from "../../types/pomodoro.types";
 
 interface ModeSelectorProps {

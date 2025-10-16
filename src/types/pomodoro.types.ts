@@ -39,3 +39,11 @@ export interface NextPhaseInfo {
   name: string;
   duration: string;
 }
+
+// Re-export store types for convenience
+export type {
+  DailyStats,
+  SavedModeSession,
+  SessionHistoryItem,
+  TaskItem,
+} from "../store/types";

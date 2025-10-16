@@ -14,7 +14,12 @@ export const TaskInput = ({ value, onChange }: TaskInputProps) => {
       exit={{ opacity: 0, height: 0, marginBottom: 0 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
     >
+      <label htmlFor="task-input" className="sr-only">
+        Task name
+      </label>
       <motion.input
+        id="task-input"
+        name="task"
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -22,6 +27,7 @@ export const TaskInput = ({ value, onChange }: TaskInputProps) => {
         className="w-full px-6 py-4 rounded-2xl bg-white/10 backdrop-blur-xl text-white placeholder-white/40 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 text-center text-lg"
         whileFocus={{ scale: 1.02 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        aria-label="Enter task name"
       />
     </motion.div>
   );

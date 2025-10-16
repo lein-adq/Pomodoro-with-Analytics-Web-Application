@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 
 interface CurrentTaskDisplayProps {
   taskName: string;
@@ -10,10 +10,10 @@ export const CurrentTaskDisplay = ({ taskName }: CurrentTaskDisplayProps) => {
       {taskName && (
         <motion.div
           className="mb-6 text-center"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={{ duration: 0.3 }}
+          initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+          animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
+          exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
         >
           <motion.p
             className="text-white/60 text-sm mb-1"

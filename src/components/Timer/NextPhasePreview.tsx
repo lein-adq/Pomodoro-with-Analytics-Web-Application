@@ -1,5 +1,5 @@
-import { motion } from "motion/react";
 import { ChevronRight } from "lucide-react";
+import { motion } from "motion/react";
 
 import type { NextPhaseInfo } from "../../types/pomodoro.types";
 

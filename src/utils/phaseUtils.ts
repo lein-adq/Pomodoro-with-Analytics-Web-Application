@@ -1,8 +1,8 @@
 import type {
-  Phase,
   Mode,
   ModeConfigs,
   NextPhaseInfo,
+  Phase,
 } from "../types/pomodoro.types";
 import { formatTime } from "./formatTime";
 

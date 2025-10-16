@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from "motion/react";
 import { X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import type { CustomSettings, Mode, Phase } from "../../types/pomodoro.types";
 
 interface SettingsPanelProps {
@@ -86,10 +86,15 @@ export const SettingsPanel = ({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <label className="text-white text-sm font-medium block mb-2">
+                <label
+                  htmlFor="work-duration"
+                  className="text-white text-sm font-medium block mb-2"
+                >
                   Work Duration (minutes)
                 </label>
                 <motion.input
+                  id="work-duration"
+                  name="workDuration"
                   type="number"
                   value={settings.work}
                   onChange={(e) => handleWorkChange(e.target.value)}
@@ -97,6 +102,7 @@ export const SettingsPanel = ({
                   min="1"
                   max="120"
                   whileFocus={{ scale: 1.02 }}
+                  aria-label="Work duration in minutes"
                 />
               </motion.div>
 
@@ -105,10 +111,15 @@ export const SettingsPanel = ({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                <label className="text-white text-sm font-medium block mb-2">
+                <label
+                  htmlFor="break-duration"
+                  className="text-white text-sm font-medium block mb-2"
+                >
                   Break Duration (minutes)
                 </label>
                 <motion.input
+                  id="break-duration"
+                  name="breakDuration"
                   type="number"
                   value={settings.break}
                   onChange={(e) =>
@@ -118,6 +129,7 @@ export const SettingsPanel = ({
                   min="1"
                   max="60"
                   whileFocus={{ scale: 1.02 }}
+                  aria-label="Break duration in minutes"
                 />
               </motion.div>
 
@@ -126,10 +138,15 @@ export const SettingsPanel = ({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                <label className="text-white text-sm font-medium block mb-2">
+                <label
+                  htmlFor="long-break-duration"
+                  className="text-white text-sm font-medium block mb-2"
+                >
                   Long Break Duration (minutes)
                 </label>
                 <motion.input
+                  id="long-break-duration"
+                  name="longBreakDuration"
                   type="number"
                   value={settings.longBreak}
                   onChange={(e) =>
@@ -139,6 +156,7 @@ export const SettingsPanel = ({
                   min="1"
                   max="60"
                   whileFocus={{ scale: 1.02 }}
+                  aria-label="Long break duration in minutes"
                 />
               </motion.div>
             </motion.div>

@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import type { Phase } from "../../types/pomodoro.types";
 import { formatTime } from "../../utils/formatTime";
 
 interface TimerDisplayProps {
@@ -6,6 +7,7 @@ interface TimerDisplayProps {
   progress: number;
   isRunning: boolean;
   sessionNumber: number;
+  phase: Phase;
 }
 
 export const TimerDisplay = ({
@@ -13,7 +15,19 @@ export const TimerDisplay = ({
   progress,
   isRunning,
   sessionNumber,
+  phase,
 }: TimerDisplayProps) => {
+  // Determine the label based on phase
+  const getPhaseLabel = () => {
+    if (phase === "work") {
+      return `Session ${sessionNumber}`;
+    }
+    if (phase === "longBreak") {
+      return "Long Break";
+    }
+    // Regular break - show which break number (based on completed sessions)
+    return `Break ${sessionNumber - 1}`;
+  };
   return (
     <div className="w-full px-8 mb-8">
       {/* Progress Bar with Glow */}
@@ -76,8 +90,9 @@ export const TimerDisplay = ({
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          key={`${phase}-${sessionNumber}`}
         >
-          Session {sessionNumber}
+          {getPhaseLabel()}
         </motion.div>
       </div>
     </div>

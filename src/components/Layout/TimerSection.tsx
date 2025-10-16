@@ -1,13 +1,13 @@
-import { motion, AnimatePresence } from "motion/react";
-import type { Phase, NextPhaseInfo } from "../../types/pomodoro.types";
+import { AnimatePresence, motion } from "motion/react";
+import type { NextPhaseInfo, Phase } from "../../types/pomodoro.types";
 import {
-  PhaseIndicator,
-  TimerDisplay,
-  TimerControls,
   NextPhasePreview,
+  PhaseIndicator,
   SessionProgress,
+  TimerControls,
+  TimerDisplay,
 } from "../Timer";
-import { TaskInput, CurrentTaskDisplay } from "../UI";
+import { CurrentTaskDisplay, TaskInput } from "../UI";
 import { TimerCard } from "./TimerCard";
 
 interface TimerSectionProps {
@@ -71,6 +71,7 @@ export const TimerSection = ({
             progress={onGetProgress()}
             isRunning={isRunning}
             sessionNumber={completedSessions + 1}
+            phase={phase}
           />
 
           {/* Controls */}

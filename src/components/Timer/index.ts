@@ -2,8 +2,8 @@
  * Timer Components Barrel Export
  */
 
-export { PhaseIndicator } from "./PhaseIndicator";
-export { TimerDisplay } from "./TimerDisplay";
-export { TimerControls } from "./TimerControls";
 export { NextPhasePreview } from "./NextPhasePreview";
+export { PhaseIndicator } from "./PhaseIndicator";
 export { SessionProgress } from "./SessionProgress";
+export { TimerControls } from "./TimerControls";
+export { TimerDisplay } from "./TimerDisplay";

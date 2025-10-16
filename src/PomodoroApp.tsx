@@ -1,72 +1,239 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
-// Hooks
-import { useTimer } from "./hooks/useTimer";
-import { usePomodoroSettings } from "./hooks/usePomodoroSettings";
-import { useAudio } from "./hooks/useAudio";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { TimerSection, TopBar } from "./components/Layout";
+import { SettingsPanel } from "./components/Settings";
 // Components
 import { Sidebar } from "./components/Sidebar";
-import { SettingsPanel } from "./components/Settings";
-import { CelebrationModal, BackgroundElements } from "./components/UI";
-import { TopBar, TimerSection } from "./components/Layout";
+import {
+  BackgroundElements,
+  CelebrationModal,
+  ConfirmDialog,
+} from "./components/UI";
+// Constants
+import {
+  DEFAULT_ANIMEDORO_CONFIG,
+  DEFAULT_POMODORO_CONFIG,
+} from "./constants/pomodoro.constants";
+// Hooks
+import {
+  useAudio,
+  useSettings,
+  useSettingsActions,
+  useStatsActions,
+  useTimerActions,
+  useTimerState,
+  useTimerWorker,
+  useUI,
+  useUIActions,
+} from "./hooks";
+import type { Mode, ModeConfigs } from "./types/pomodoro.types";
 // Utils
-import { getPhaseColor, getNextPhase } from "./utils/phaseUtils";
-import type { Mode } from "./types/pomodoro.types";
+import { getNextPhase, getPhaseColor } from "./utils/phaseUtils";
 
 export const PomodoroApp = () => {
-  // UI State
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [focusMode, setFocusMode] = useState(false);
-  const [showCelebration, setShowCelebration] = useState(false);
-
-  // Settings Hook
-  const {
-    customSettings,
-    setCustomWork,
-    setCustomBreak,
-    setCustomLongBreak,
-    getModeConfigs,
-  } = usePomodoroSettings();
+  // Store hooks
+  const timer = useTimerState();
+  const timerActions = useTimerActions();
+  const { customSettings } = useSettings();
+  const settingsActions = useSettingsActions();
+  const statsActions = useStatsActions();
+  const ui = useUI();
+  const uiActions = useUIActions();
 
   // Audio Hook
   const { playNotification } = useAudio();
 
-  /**
-   * Handles phase completion - plays sound and shows celebration
-   */
-  const handlePhaseComplete = () => {
-    playNotification();
-    if (timer.phase === "work") {
-      setShowCelebration(true);
-      setTimeout(() => setShowCelebration(false), 3000);
-    }
-  };
+  // Confirmation dialog state
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    mode: Mode | null;
+  }>({
+    isOpen: false,
+    mode: null,
+  });
 
-  // Timer Hook
-  const timer = useTimer({
-    modeConfigs: getModeConfigs(),
-    onPhaseComplete: handlePhaseComplete,
+  // Previous isRunning state to detect changes
+  const prevIsRunningRef = useRef(timer.isRunning);
+
+  /**
+   * Get mode configurations
+   */
+  const getModeConfigs = (): ModeConfigs => ({
+    pomodoro: DEFAULT_POMODORO_CONFIG,
+    animedoro: DEFAULT_ANIMEDORO_CONFIG,
+    custom: {
+      work: customSettings.work * 60,
+      break: customSettings.break * 60,
+      longBreak: customSettings.longBreak * 60,
+      sessionsBeforeLong: 4,
+    },
+  });
+
+  const modeConfigs = getModeConfigs();
+
+  /**
+   * Timer worker for accurate timing
+   */
+  const worker = useTimerWorker({
+    onTick: (timeLeft) => {
+      timerActions.setTimeLeft(timeLeft);
+    },
+    onComplete: () => {
+      handlePhaseComplete();
+    },
   });
 
   /**
-   * Handles mode switching
+   * Page refresh warning effect
+   */
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // Only warn if timer is actively running
+      if (timer.isRunning) {
+        e.preventDefault();
+        e.returnValue = "";
+        return "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [timer.isRunning]);
+
+  /**
+   * Control worker based on timer state changes
+   */
+  useEffect(() => {
+    const wasRunning = prevIsRunningRef.current;
+    const isNowRunning = timer.isRunning;
+
+    // Only start/pause when the running state actually changes
+    if (isNowRunning && !wasRunning) {
+      // Just started - start worker with current time
+      worker.start(timer.timeLeft);
+    } else if (!isNowRunning && wasRunning) {
+      // Just paused/stopped - pause worker
+      worker.pause();
+    }
+
+    // Update ref for next render
+    prevIsRunningRef.current = isNowRunning;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timer.isRunning]);
+
+  /**
+   * Stop worker when timer is reset (completedSessions becomes 0 while not running)
+   */
+  useEffect(() => {
+    if (
+      !timer.isRunning &&
+      timer.completedSessions === 0 &&
+      timer.phase === "work"
+    ) {
+      worker.stop();
+    }
+  }, [timer.completedSessions, timer.phase, timer.isRunning]);
+
+  /**
+   * Update document title with timer
+   */
+  useEffect(() => {
+    if (timer.isRunning) {
+      const minutes = Math.floor(timer.timeLeft / 60);
+      const seconds = timer.timeLeft % 60;
+      const timeStr = `${minutes.toString().padStart(2, "0")}:${seconds
+        .toString()
+        .padStart(2, "0")}`;
+      document.title = `${timeStr} - ${
+        timer.phase === "work"
+          ? "Focus"
+          : timer.phase === "longBreak"
+            ? "Long Break"
+            : "Break"
+      }`;
+    } else {
+      document.title = "Focus Time - Pomodoro Timer";
+    }
+  }, [timer.timeLeft, timer.isRunning, timer.phase]);
+
+  /**
+   * Handles phase completion - plays sound, shows celebration, adds to stats
+   */
+  const handlePhaseComplete = () => {
+    playNotification();
+
+    // Add to session history
+    const config = modeConfigs[timer.mode];
+    const duration =
+      timer.phase === "work"
+        ? config.work
+        : timer.phase === "break"
+          ? config.break
+          : config.longBreak;
+
+    statsActions.addSession(
+      duration,
+      timer.mode,
+      timer.phase,
+      timer.currentTask,
+    );
+
+    // Show celebration for work completion
+    if (timer.phase === "work") {
+      uiActions.triggerCelebration();
+      setTimeout(() => uiActions.hideCelebration(), 3000);
+    }
+
+    // Advance to next phase
+    timerActions.completePhase(modeConfigs);
+  };
+
+  /**
+   * Handles mode switching with confirmation if there's progress
    */
   const handleModeSwitch = (newMode: Mode) => {
-    timer.switchMode(newMode, customSettings.work);
+    // Check if there's progress that would be lost
+    const hasProgress =
+      timer.timeLeft > 0 &&
+      (timer.completedSessions > 0 || timer.currentTask !== "");
+
+    // If there's progress and not already on this mode, show confirmation
+    if (hasProgress && timer.mode !== newMode) {
+      setConfirmDialog({ isOpen: true, mode: newMode });
+    } else {
+      // No progress or same mode, switch directly
+      timerActions.switchMode(newMode, modeConfigs);
+    }
+  };
+
+  /**
+   * Confirms mode switch and executes it
+   */
+  const confirmModeSwitch = () => {
+    if (confirmDialog.mode) {
+      timerActions.switchMode(confirmDialog.mode, modeConfigs);
+      setConfirmDialog({ isOpen: false, mode: null });
+    }
+  };
+
+  /**
+   * Cancels mode switch
+   */
+  const cancelModeSwitch = () => {
+    setConfirmDialog({ isOpen: false, mode: null });
   };
 
   /**
    * Handles saving settings
    */
   const handleSaveSettings = () => {
-    setSettingsOpen(false);
+    uiActions.setSettingsOpen(false);
     if (timer.mode === "custom") {
-      timer.switchMode("custom", customSettings.work);
+      timerActions.switchMode("custom", modeConfigs);
     }
   };
 
-  const modeConfigs = getModeConfigs();
   const nextPhase = getNextPhase(
     timer.phase,
     timer.completedSessions,
@@ -74,9 +241,14 @@ export const PomodoroApp = () => {
     modeConfigs,
   );
 
+  // Get today's stats for display
+  const todayStats = statsActions.getTodayStats();
+
   return (
     <motion.div
-      className={`min-h-screen bg-gradient-to-br ${getPhaseColor(timer.phase)} relative overflow-hidden`}
+      className={`min-h-screen bg-gradient-to-br ${getPhaseColor(
+        timer.phase,
+      )} relative overflow-hidden`}
       key={timer.phase}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -86,18 +258,33 @@ export const PomodoroApp = () => {
       <BackgroundElements />
 
       {/* Celebration Modal */}
-      <CelebrationModal isVisible={showCelebration} />
+      <CelebrationModal isVisible={ui.showCelebration} />
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title="Switch Timer Mode?"
+        message={`You have an active session with ${timer.completedSessions} completed session(s). Switching modes will save your current progress but reset the timer. Continue?`}
+        confirmText="Switch Mode"
+        cancelText="Stay Here"
+        onConfirm={confirmModeSwitch}
+        onCancel={cancelModeSwitch}
+        variant="warning"
+      />
 
       {/* Sidebar */}
       <AnimatePresence>
-        {!focusMode && (
+        {!ui.focusMode && (
           <Sidebar
-            isOpen={sidebarOpen}
-            onClose={() => setSidebarOpen(false)}
+            isOpen={ui.sidebarOpen}
+            onClose={() => uiActions.setSidebarOpen(false)}
             currentMode={timer.mode}
             onModeChange={handleModeSwitch}
-            stats={timer.stats}
-            onSettingsClick={() => setSettingsOpen(true)}
+            stats={{
+              todaysSessions: todayStats.sessions,
+              totalFocusTime: todayStats.focusTime,
+            }}
+            onSettingsClick={() => uiActions.setSettingsOpen(true)}
           />
         )}
       </AnimatePresence>
@@ -105,17 +292,17 @@ export const PomodoroApp = () => {
       {/* Main Content */}
       <motion.div
         animate={{
-          marginLeft: sidebarOpen && !focusMode ? 288 : 0,
+          marginLeft: ui.sidebarOpen && !ui.focusMode ? 288 : 0,
         }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
         {/* Top Bar */}
         <AnimatePresence>
-          {!focusMode && (
+          {!ui.focusMode && (
             <TopBar
-              isSidebarOpen={sidebarOpen}
-              onSidebarToggle={() => setSidebarOpen(true)}
-              onFocusModeToggle={() => setFocusMode(true)}
+              isSidebarOpen={ui.sidebarOpen}
+              onSidebarToggle={() => uiActions.setSidebarOpen(true)}
+              onFocusModeToggle={() => uiActions.setFocusMode(true)}
             />
           )}
         </AnimatePresence>
@@ -126,22 +313,22 @@ export const PomodoroApp = () => {
           timeLeft={timer.timeLeft}
           isRunning={timer.isRunning}
           completedSessions={timer.completedSessions}
-          sessionsBeforeLong={timer.modeConfig.sessionsBeforeLong}
+          sessionsBeforeLong={modeConfigs[timer.mode].sessionsBeforeLong}
           taskInput={timer.taskInput}
           currentTask={timer.currentTask}
           nextPhase={nextPhase}
-          focusMode={focusMode}
-          onTaskInputChange={timer.setTaskInput}
-          onToggleTimer={timer.toggleTimer}
-          onResetTimer={timer.resetTimer}
-          onGetProgress={timer.getProgress}
+          focusMode={ui.focusMode}
+          onTaskInputChange={timerActions.setTaskInput}
+          onToggleTimer={timerActions.toggleTimer}
+          onResetTimer={() => timerActions.resetTimer(modeConfigs)}
+          onGetProgress={() => timerActions.getProgress(modeConfigs)}
         />
 
         {/* Focus Mode Exit Button */}
         <AnimatePresence>
-          {focusMode && (
+          {ui.focusMode && (
             <motion.button
-              onClick={() => setFocusMode(false)}
+              onClick={() => uiActions.setFocusMode(false)}
               className="fixed bottom-8 right-8 px-6 py-3 rounded-full bg-white/10 backdrop-blur-xl text-white border border-white/20 text-sm font-medium hover:bg-white/20"
               type="button"
               initial={{ opacity: 0, scale: 0.8, y: 20 }}
@@ -159,12 +346,12 @@ export const PomodoroApp = () => {
 
       {/* Settings Panel */}
       <SettingsPanel
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
+        isOpen={ui.settingsOpen}
+        onClose={() => uiActions.setSettingsOpen(false)}
         settings={customSettings}
-        onWorkChange={setCustomWork}
-        onBreakChange={setCustomBreak}
-        onLongBreakChange={setCustomLongBreak}
+        onWorkChange={settingsActions.updateCustomWork}
+        onBreakChange={settingsActions.updateCustomBreak}
+        onLongBreakChange={settingsActions.updateCustomLongBreak}
         onSave={handleSaveSettings}
         currentMode={timer.mode}
         currentPhase={timer.phase}
