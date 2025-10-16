@@ -1,9 +1,3 @@
-/**
- * Timer Worker Hook
- *
- * Uses a Web Worker for accurate timing that survives tab switching and sleep
- */
-
 import { useCallback, useEffect, useRef } from "react";
 
 interface UseTimerWorkerOptions {

@@ -1,10 +1,3 @@
-/**
- * Session History Component (Example)
- *
- * This is an example component showing how to display session history
- * and analytics from the stats store.
- */
-
 import { Award, Calendar, Clock } from "lucide-react";
 import { useStats, useStatsActions } from "../../hooks";
 import type { SessionHistoryItem } from "../../store/types";

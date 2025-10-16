@@ -1,9 +1,3 @@
-/**
- * Pomodoro App Constants
- *
- * This file contains configuration constants for different timer modes.
- */
-
 import type { ModeConfig } from "../types/pomodoro.types";
 
 export const DEFAULT_POMODORO_CONFIG: ModeConfig = {

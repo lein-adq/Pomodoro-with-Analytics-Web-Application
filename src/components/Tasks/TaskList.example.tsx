@@ -1,10 +1,3 @@
-/**
- * Task List Component (Example)
- *
- * This is an example component showing how to use the task management features.
- * You can integrate this into your sidebar or create a dedicated task panel.
- */
-
 import { CheckCircle2, Clock, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTasks, useTasksActions } from "../../hooks";
