@@ -1,10 +1,14 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TimerSection, TopBar } from "./components/Layout";
 import { SettingsPanel } from "./components/Settings";
 // Components
 import { Sidebar } from "./components/Sidebar";
-import { BackgroundElements, CelebrationModal } from "./components/UI";
+import {
+  BackgroundElements,
+  CelebrationModal,
+  ConfirmDialog,
+} from "./components/UI";
 // Constants
 import {
   DEFAULT_ANIMEDORO_CONFIG,
@@ -41,6 +45,15 @@ export const PomodoroApp = () => {
   // Ref for interval
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // Confirmation dialog state
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    mode: Mode | null;
+  }>({
+    isOpen: false,
+    mode: null,
+  });
+
   /**
    * Get mode configurations
    */
@@ -56,6 +69,23 @@ export const PomodoroApp = () => {
   });
 
   const modeConfigs = getModeConfigs();
+
+  /**
+   * Page refresh warning effect
+   */
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // Only warn if timer is actively running
+      if (timer.isRunning) {
+        e.preventDefault();
+        e.returnValue = "";
+        return "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [timer.isRunning]);
 
   /**
    * Timer tick effect
@@ -110,10 +140,38 @@ export const PomodoroApp = () => {
   };
 
   /**
-   * Handles mode switching
+   * Handles mode switching with confirmation if there's progress
    */
   const handleModeSwitch = (newMode: Mode) => {
-    timerActions.switchMode(newMode, customSettings.work);
+    // Check if there's progress that would be lost
+    const hasProgress =
+      timer.timeLeft > 0 &&
+      (timer.completedSessions > 0 || timer.currentTask !== "");
+
+    // If there's progress and not already on this mode, show confirmation
+    if (hasProgress && timer.mode !== newMode) {
+      setConfirmDialog({ isOpen: true, mode: newMode });
+    } else {
+      // No progress or same mode, switch directly
+      timerActions.switchMode(newMode, customSettings.work);
+    }
+  };
+
+  /**
+   * Confirms mode switch and executes it
+   */
+  const confirmModeSwitch = () => {
+    if (confirmDialog.mode) {
+      timerActions.switchMode(confirmDialog.mode, customSettings.work);
+      setConfirmDialog({ isOpen: false, mode: null });
+    }
+  };
+
+  /**
+   * Cancels mode switch
+   */
+  const cancelModeSwitch = () => {
+    setConfirmDialog({ isOpen: false, mode: null });
   };
 
   /**
@@ -149,6 +207,18 @@ export const PomodoroApp = () => {
 
       {/* Celebration Modal */}
       <CelebrationModal isVisible={ui.showCelebration} />
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title="Switch Timer Mode?"
+        message={`You have an active session with ${timer.completedSessions} completed session(s). Switching modes will save your current progress but reset the timer. Continue?`}
+        confirmText="Switch Mode"
+        cancelText="Stay Here"
+        onConfirm={confirmModeSwitch}
+        onCancel={cancelModeSwitch}
+        variant="warning"
+      />
 
       {/* Sidebar */}
       <AnimatePresence>
