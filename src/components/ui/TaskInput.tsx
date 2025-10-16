@@ -8,7 +8,7 @@ interface TaskInputProps {
 export const TaskInput = ({ value, onChange }: TaskInputProps) => {
   return (
     <motion.div
-      className="mb-6 overflow-hidden"
+      className="mb-6"
       initial={{ opacity: 0, height: 0, marginBottom: 0 }}
       animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
       exit={{ opacity: 0, height: 0, marginBottom: 0 }}
