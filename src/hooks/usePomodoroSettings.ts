@@ -1,8 +1,5 @@
 import { useState } from "react";
-import type {
-  CustomSettings,
-  ModeConfigs,
-} from "../types/pomodoro.types";
+import type { CustomSettings, ModeConfigs } from "../types/pomodoro.types";
 import {
   DEFAULT_POMODORO_CONFIG,
   DEFAULT_ANIMEDORO_CONFIG,

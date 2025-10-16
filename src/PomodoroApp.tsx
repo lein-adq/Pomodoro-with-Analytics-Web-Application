@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 // Hooks
-import { useTimer } from "../hooks/useTimer";
-import { usePomodoroSettings } from "../hooks/usePomodoroSettings";
-import { useAudio } from "../hooks/useAudio";
+import { useTimer } from "./hooks/useTimer";
+import { usePomodoroSettings } from "./hooks/usePomodoroSettings";
+import { useAudio } from "./hooks/useAudio";
 // Components
-import { Sidebar } from "./Sidebar";
-import { SettingsPanel } from "./Settings";
-import { CelebrationModal, BackgroundElements } from "./UI";
-import { TopBar, TimerSection } from "./Layout";
+import { Sidebar } from "./components/Sidebar";
+import { SettingsPanel } from "./components/Settings";
+import { CelebrationModal, BackgroundElements } from "./components/UI";
+import { TopBar, TimerSection } from "./components/Layout";
 // Utils
-import { getPhaseColor, getNextPhase } from "../utils/phaseUtils";
-import type { Mode } from "../types/pomodoro.types";
+import { getPhaseColor, getNextPhase } from "./utils/phaseUtils";
+import type { Mode } from "./types/pomodoro.types";
 
 export const PomodoroApp = () => {
   // UI State
