@@ -1,9 +1,3 @@
-/**
- * Mode Selector Component
- *
- * Buttons to switch between Pomodoro, Animedoro, and Custom modes with Motion animations.
- */
-
 import { motion } from "motion/react";
 import { Flame, Tv, Settings } from "lucide-react";
 import type { Mode } from "../../types/pomodoro.types";

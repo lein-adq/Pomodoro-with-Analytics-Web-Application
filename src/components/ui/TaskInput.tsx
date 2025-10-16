@@ -1,9 +1,3 @@
-/**
- * Task Input Component
- *
- * Input field for entering the current task name with Motion animations.
- */
-
 import { motion } from "motion/react";
 
 interface TaskInputProps {
@@ -14,11 +8,11 @@ interface TaskInputProps {
 export const TaskInput = ({ value, onChange }: TaskInputProps) => {
   return (
     <motion.div
-      className="mb-6"
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.3 }}
+      className="mb-6 overflow-hidden"
+      initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+      animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
+      exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
     >
       <motion.input
         type="text"

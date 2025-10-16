@@ -1,9 +1,3 @@
-/**
- * Pomodoro App Type Definitions
- *
- * This file contains all TypeScript types and interfaces used throughout the Pomodoro application.
- */
-
 export type Mode = "pomodoro" | "animedoro" | "custom";
 
 export type Phase = "work" | "break" | "longBreak";

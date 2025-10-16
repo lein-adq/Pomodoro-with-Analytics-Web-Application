@@ -1,10 +1,3 @@
-/**
- * Phase Indicator Component
- *
- * Displays the current phase (Focus Time, Short Break, or Long Break) with an icon.
- * Uses Motion for smooth phase transitions.
- */
-
 import { motion, AnimatePresence } from "motion/react";
 import { Flame, Coffee, Tv } from "lucide-react";
 import type { Phase } from "../../types/pomodoro.types";

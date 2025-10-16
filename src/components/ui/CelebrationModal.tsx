@@ -1,10 +1,3 @@
-/**
- * Celebration Modal Component
- *
- * Animated celebration display shown when a session is completed.
- * Uses Motion for smooth enter/exit animations.
- */
-
 import { motion, AnimatePresence } from "motion/react";
 import { Sparkles } from "lucide-react";
 

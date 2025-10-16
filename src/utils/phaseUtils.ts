@@ -1,9 +1,3 @@
-/**
- * Phase Utility Functions
- *
- * Helper functions for phase-related logic.
- */
-
 import type {
   Phase,
   Mode,

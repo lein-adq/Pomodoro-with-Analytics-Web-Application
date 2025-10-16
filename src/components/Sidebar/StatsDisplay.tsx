@@ -1,9 +1,3 @@
-/**
- * Stats Display Component
- *
- * Shows today's statistics (sessions completed and focus time) with Motion animations.
- */
-
 import { motion } from "motion/react";
 import { Target, Zap } from "lucide-react";
 import type { Stats } from "../../types/pomodoro.types";

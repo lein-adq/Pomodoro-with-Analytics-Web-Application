@@ -1,13 +1,6 @@
-/**
- * Pomodoro Settings Hook
- *
- * Manages custom settings for the Pomodoro timer.
- */
-
 import { useState } from "react";
 import type {
   CustomSettings,
-  ModeConfig,
   ModeConfigs,
 } from "../types/pomodoro.types";
 import {

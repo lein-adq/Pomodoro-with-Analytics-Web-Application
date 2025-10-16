@@ -1,9 +1,3 @@
-/**
- * Audio Hook
- *
- * Handles audio notifications for the Pomodoro timer.
- */
-
 export const useAudio = () => {
   /**
    * Plays a notification sound when a phase completes

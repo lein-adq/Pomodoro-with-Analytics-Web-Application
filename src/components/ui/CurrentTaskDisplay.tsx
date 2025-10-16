@@ -1,9 +1,3 @@
-/**
- * Current Task Display Component
- *
- * Shows the currently active task name with Motion animations.
- */
-
 import { motion, AnimatePresence } from "motion/react";
 
 interface CurrentTaskDisplayProps {

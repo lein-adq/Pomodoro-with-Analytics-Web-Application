@@ -1,9 +1,3 @@
-/**
- * Background Elements Component
- *
- * Animated background decorative elements using Motion.
- */
-
 import { motion } from "motion/react";
 
 export const BackgroundElements = () => {

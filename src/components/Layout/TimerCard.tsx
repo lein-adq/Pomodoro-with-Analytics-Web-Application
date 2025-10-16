@@ -1,9 +1,3 @@
-/**
- * Timer Card Component
- *
- * Main card containing the timer display and controls with Motion animations.
- */
-
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
 

@@ -1,9 +1,3 @@
-/**
- * Settings Panel Component
- *
- * Modal panel for configuring custom timer durations with Motion animations.
- */
-
 import { motion, AnimatePresence } from "motion/react";
 import { X } from "lucide-react";
 import type { CustomSettings, Mode, Phase } from "../../types/pomodoro.types";

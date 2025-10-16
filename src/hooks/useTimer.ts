@@ -1,9 +1,3 @@
-/**
- * Timer Hook
- *
- * Core timer logic and state management for the Pomodoro application.
- */
-
 import { useState, useEffect, useRef } from "react";
 import type { Mode, Phase, ModeConfigs, Stats } from "../types/pomodoro.types";
 
@@ -26,7 +20,7 @@ export const useTimer = ({ modeConfigs, onPhaseComplete }: UseTimerProps) => {
     totalFocusTime: 0,
   });
 
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   /**
    * Main timer effect - handles countdown and phase completion

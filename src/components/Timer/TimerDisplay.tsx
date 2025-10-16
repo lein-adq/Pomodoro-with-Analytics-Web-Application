@@ -1,10 +1,3 @@
-/**
- * Timer Display Component
- *
- * Circular SVG timer with animated progress ring and time display.
- * Uses Motion for smooth animations.
- */
-
 import { motion } from "motion/react";
 import { formatTime } from "../../utils/formatTime";
 

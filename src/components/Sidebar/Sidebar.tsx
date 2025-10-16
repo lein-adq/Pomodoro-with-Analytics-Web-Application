@@ -1,9 +1,3 @@
-/**
- * Sidebar Component
- *
- * Left sidebar containing mode selection, stats, and settings with Motion animations.
- */
-
 import { motion, AnimatePresence } from "motion/react";
 import { X, Flame, Settings } from "lucide-react";
 import type { Mode, Stats } from "../../types/pomodoro.types";

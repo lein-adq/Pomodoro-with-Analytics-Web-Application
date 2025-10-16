@@ -1,8 +1,4 @@
 /**
- * Time Formatting Utilities
- */
-
-/**
  * Formats seconds into MM:SS format
  */
 export const formatTime = (seconds: number): string => {

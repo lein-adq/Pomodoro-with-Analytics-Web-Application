@@ -1,10 +1,3 @@
-/**
- * Session Progress Component
- *
- * Visual dots showing progress through sessions before long break.
- * Uses Motion for smooth scale animations.
- */
-
 import { motion } from "motion/react";
 
 interface SessionProgressProps {

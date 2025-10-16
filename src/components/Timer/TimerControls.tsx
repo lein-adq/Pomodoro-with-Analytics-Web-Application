@@ -1,9 +1,3 @@
-/**
- * Timer Controls Component
- *
- * Play/Pause and Reset buttons for the timer with Motion animations.
- */
-
 import { motion } from "motion/react";
 import { Play, Pause, RotateCcw } from "lucide-react";
 
