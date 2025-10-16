@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from "motion/react";
 import { X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import type { CustomSettings, Mode, Phase } from "../../types/pomodoro.types";
 
 interface SettingsPanelProps {

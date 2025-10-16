@@ -1,5 +1,5 @@
+import { Pause, Play, RotateCcw } from "lucide-react";
 import { motion } from "motion/react";
-import { Play, Pause, RotateCcw } from "lucide-react";
 
 interface TimerControlsProps {
   isRunning: boolean;

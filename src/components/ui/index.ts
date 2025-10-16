@@ -2,7 +2,7 @@
  * UI Components Barrel Export
  */
 
-export { TaskInput } from "./TaskInput";
+export { BackgroundElements } from "./BackgroundElements";
 export { CelebrationModal } from "./CelebrationModal";
 export { CurrentTaskDisplay } from "./CurrentTaskDisplay";
-export { BackgroundElements } from "./BackgroundElements";
+export { TaskInput } from "./TaskInput";

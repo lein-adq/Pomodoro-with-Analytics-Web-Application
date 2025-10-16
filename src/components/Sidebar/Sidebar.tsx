@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from "motion/react";
-import { X, Flame, Settings } from "lucide-react";
+import { Flame, Settings, X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import type { Mode, Stats } from "../../types/pomodoro.types";
 import { ModeSelector } from "./ModeSelector";
 import { StatsDisplay } from "./StatsDisplay";

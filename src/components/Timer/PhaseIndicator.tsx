@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from "motion/react";
-import { Flame, Coffee, Tv } from "lucide-react";
+import { Coffee, Flame, Tv } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import type { Phase } from "../../types/pomodoro.types";
 
 interface PhaseIndicatorProps {
