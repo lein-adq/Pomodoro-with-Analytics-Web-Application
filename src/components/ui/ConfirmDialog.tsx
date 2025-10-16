@@ -1,9 +1,3 @@
-/**
- * Confirm Dialog Component
- *
- * A reusable confirmation dialog for important actions
- */
-
 import { AlertTriangle } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 

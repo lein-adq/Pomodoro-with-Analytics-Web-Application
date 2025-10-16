@@ -1,9 +1,3 @@
-/**
- * Store Hooks
- *
- * Typed selector hooks for optimal re-renders
- */
-
 import { useShallow } from "zustand/react/shallow";
 import { usePomodoroStore } from "./index";
 import type { TimerSlice } from "./slices/timerSlice";
