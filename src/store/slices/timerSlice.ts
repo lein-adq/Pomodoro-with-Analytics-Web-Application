@@ -9,7 +9,7 @@ export interface TimerActions {
   resetTimer: () => void;
 
   // Mode management
-  switchMode: (newMode: Mode, customWork?: number) => void;
+  switchMode: (newMode: Mode, modeConfigs: ModeConfigs) => void;
   saveCurrentSession: () => void;
   resumeSavedSession: (mode: Mode) => boolean;
 
@@ -134,7 +134,7 @@ export const createTimerSlice: StateCreator<TimerSlice, [], [], TimerSlice> = (
   /**
    * Switches to a different timer mode
    */
-  switchMode: (newMode: Mode, customWork?: number) => {
+  switchMode: (newMode: Mode, modeConfigs: ModeConfigs) => {
     const state = get();
 
     // Save current session before switching
@@ -146,6 +146,9 @@ export const createTimerSlice: StateCreator<TimerSlice, [], [], TimerSlice> = (
     const newSavedSessions = { ...state.savedSessions };
     newSavedSessions[newMode] = null;
 
+    // Get the correct work duration for the new mode
+    const newModeConfig = modeConfigs[newMode];
+
     set({
       mode: newMode,
       isRunning: false,
@@ -153,7 +156,7 @@ export const createTimerSlice: StateCreator<TimerSlice, [], [], TimerSlice> = (
       completedSessions: 0,
       currentTask: "",
       taskInput: "",
-      timeLeft: customWork !== undefined ? customWork * 60 : 25 * 60,
+      timeLeft: newModeConfig.work,
       savedSessions: newSavedSessions,
     });
   },

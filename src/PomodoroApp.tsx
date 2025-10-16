@@ -153,7 +153,7 @@ export const PomodoroApp = () => {
       setConfirmDialog({ isOpen: true, mode: newMode });
     } else {
       // No progress or same mode, switch directly
-      timerActions.switchMode(newMode, customSettings.work);
+      timerActions.switchMode(newMode, modeConfigs);
     }
   };
 
@@ -162,7 +162,7 @@ export const PomodoroApp = () => {
    */
   const confirmModeSwitch = () => {
     if (confirmDialog.mode) {
-      timerActions.switchMode(confirmDialog.mode, customSettings.work);
+      timerActions.switchMode(confirmDialog.mode, modeConfigs);
       setConfirmDialog({ isOpen: false, mode: null });
     }
   };
@@ -180,7 +180,7 @@ export const PomodoroApp = () => {
   const handleSaveSettings = () => {
     uiActions.setSettingsOpen(false);
     if (timer.mode === "custom") {
-      timerActions.switchMode("custom", customSettings.work);
+      timerActions.switchMode("custom", modeConfigs);
     }
   };
 
