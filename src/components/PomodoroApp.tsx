@@ -1,40 +1,17 @@
-/**
- * Pomodoro App - Main Component
- *
- * This is the main orchestrator component that brings together all
- * the smaller components, hooks, and utilities to create the complete
- * Pomodoro timer application with Motion animations.
- */
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import type { Mode } from "../types/pomodoro.types";
-
 // Hooks
 import { useTimer } from "../hooks/useTimer";
 import { usePomodoroSettings } from "../hooks/usePomodoroSettings";
 import { useAudio } from "../hooks/useAudio";
-
 // Components
 import { Sidebar } from "./Sidebar";
 import { SettingsPanel } from "./Settings";
-import {
-  TaskInput,
-  CelebrationModal,
-  CurrentTaskDisplay,
-  BackgroundElements,
-} from "./UI";
-import {
-  PhaseIndicator,
-  TimerDisplay,
-  TimerControls,
-  NextPhasePreview,
-  SessionProgress,
-} from "./Timer";
-import { TopBar, TimerCard } from "./Layout";
-
+import { CelebrationModal, BackgroundElements } from "./UI";
+import { TopBar, TimerSection } from "./Layout";
 // Utils
 import { getPhaseColor, getNextPhase } from "../utils/phaseUtils";
+import type { Mode } from "../types/pomodoro.types";
 
 export const PomodoroApp = () => {
   // UI State
@@ -144,60 +121,21 @@ export const PomodoroApp = () => {
         </AnimatePresence>
 
         {/* Timer Section */}
-        <div className="flex items-center justify-center min-h-screen p-6">
-          <motion.div
-            className="max-w-2xl w-full"
-            animate={{
-              scale: focusMode ? 1.1 : 1,
-            }}
-            transition={{ type: "spring", stiffness: 200, damping: 20 }}
-          >
-            {/* Phase Indicator */}
-            <PhaseIndicator phase={timer.phase} />
-
-            {/* Task Input */}
-            <AnimatePresence>
-              {!timer.isRunning && timer.phase === "work" && !focusMode && (
-                <TaskInput
-                  value={timer.taskInput}
-                  onChange={timer.setTaskInput}
-                />
-              )}
-            </AnimatePresence>
-
-            {/* Current Task Display */}
-            <CurrentTaskDisplay taskName={timer.currentTask} />
-
-            {/* Main Timer Card */}
-            <TimerCard>
-              {/* Timer Display */}
-              <TimerDisplay
-                timeLeft={timer.timeLeft}
-                progress={timer.getProgress()}
-                isRunning={timer.isRunning}
-                sessionNumber={timer.completedSessions + 1}
-              />
-
-              {/* Controls */}
-              <TimerControls
-                isRunning={timer.isRunning}
-                onToggle={timer.toggleTimer}
-                onReset={timer.resetTimer}
-              />
-
-              {/* Next Phase Preview */}
-              <AnimatePresence>
-                {!focusMode && <NextPhasePreview nextPhase={nextPhase} />}
-              </AnimatePresence>
-
-              {/* Session Progress */}
-              <SessionProgress
-                completedSessions={timer.completedSessions}
-                sessionsBeforeLong={timer.modeConfig.sessionsBeforeLong}
-              />
-            </TimerCard>
-          </motion.div>
-        </div>
+        <TimerSection
+          phase={timer.phase}
+          timeLeft={timer.timeLeft}
+          isRunning={timer.isRunning}
+          completedSessions={timer.completedSessions}
+          sessionsBeforeLong={timer.modeConfig.sessionsBeforeLong}
+          taskInput={timer.taskInput}
+          currentTask={timer.currentTask}
+          nextPhase={nextPhase}
+          focusMode={focusMode}
+          onTaskInputChange={timer.setTaskInput}
+          onToggleTimer={timer.toggleTimer}
+          onResetTimer={timer.resetTimer}
+          onGetProgress={timer.getProgress}
+        />
 
         {/* Focus Mode Exit Button */}
         <AnimatePresence>

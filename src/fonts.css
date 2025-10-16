@@ -1,0 +1,54 @@
+/**
+ * Self-hosted IBM Plex fonts
+ *
+ * Best practices applied:
+ * - WOFF2 format (best compression, ~30% smaller than WOFF)
+ * - Font-display: swap (prevent invisible text while loading)
+ * - Subset to latin characters (smaller file size)
+ * - Only essential weights loaded
+ */
+
+/* Outfit - Light (300) */
+@font-face {
+  font-display: swap;
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 300;
+  src: url("../fonts/outfit-v15-latin-300.woff2") format("woff2");
+}
+
+/* Outfit - Regular (400) */
+@font-face {
+  font-display: swap;
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/outfit-v15-latin-regular.woff2") format("woff2");
+}
+
+/* Outfit - Medium (500) */
+@font-face {
+  font-display: swap;
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 500;
+  src: url("../fonts/outfit-v15-latin-500.woff2") format("woff2");
+}
+
+/* Outfit - Semi Bold (600) */
+@font-face {
+  font-display: swap;
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 600;
+  src: url("../fonts/outfit-v15-latin-600.woff2") format("woff2");
+}
+
+/* Outfit - Bold (700) */
+@font-face {
+  font-display: swap;
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../fonts/outfit-v15-latin-700.woff2") format("woff2");
+}

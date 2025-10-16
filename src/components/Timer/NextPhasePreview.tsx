@@ -1,11 +1,6 @@
-/**
- * Next Phase Preview Component
- *
- * Shows information about the upcoming phase with Motion animations.
- */
-
 import { motion } from "motion/react";
 import { ChevronRight } from "lucide-react";
+
 import type { NextPhaseInfo } from "../../types/pomodoro.types";
 
 interface NextPhasePreviewProps {
